@@ -1,0 +1,91 @@
+buildscript {
+    ext {
+        eafVersion = '4.5.0'
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            url "http://artifactory.kroger.com/artifactory/plugins-release"
+        }
+        maven {
+            url "http://artifactory.kroger.com/artifactory/plugins-snapshot"
+        }
+        maven {
+            url "http://artifactory.kroger.com/artifactory/libs-release"
+        }
+        maven {
+            url "http://artifactory.kroger.com/artifactory/libs-snapshot"
+        }
+        maven {
+            url "http://artifactory.kroger.com/artifactory/remote-repos"
+        }
+    }
+    dependencies {
+        classpath("com.kroger.commons:kroger-boot-gradle-plugin:4.5.0") 
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+    }
+}
+
+allprojects {
+    apply plugin: "com.jfrog.artifactory"
+    repositories {
+        mavenLocal()
+        maven {
+            url "http://artifactory.kroger.com/artifactory/libs-release"
+        }
+        maven {
+            url "http://artifactory.kroger.com/artifactory/libs-snapshot"
+        }
+        maven {
+            url "http://artifactory.kroger.com/artifactory/remote-repos"
+        }
+    }
+}
+artifactory {
+    contextUrl = "http://artifactory.kroger.com/artifactory"
+    resolve {
+        repository {
+            repoKey = 'libs-release'
+            maven = true
+        }
+    }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'com.kroger.commons.boot'
+
+jar {
+    baseName = 'priceisright'
+    version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('org.springframework.boot:spring-boot-starter-data-rest')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	runtime('org.springframework.boot:spring-boot-devtools')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+
+eclipse {
+    classpath {
+         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5.1'
+    distributionUrl = 'https://artifactory.kroger.com/artifactory/gradle-distributions-cache/gradle-3.5.1-all.zip'
+}
